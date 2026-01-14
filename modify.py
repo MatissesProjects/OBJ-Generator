@@ -1,97 +1,104 @@
 import json
 import os
-import sys
+import math
 
 STATE_FILE = "state.json"
-
-def hex_to_rgb(hex_str):
-    """Converts #FF5733 to (1.0, 0.34, 0.2)"""
-    hex_str = hex_str.lstrip('#')
-    return tuple(int(hex_str[i:i+2], 16) / 255.0 for i in (0, 2, 4))
+STL_FILE = "model.stl"
 
 def load_state():
+    # Default 'clean' crystal if state is missing
     if not os.path.exists(STATE_FILE):
-        return {"radius": 10, "height": 15, "color": "#0099FF"}
+        return {
+            "top":    [0.0,  0.0,  15.0],
+            "bottom": [0.0,  0.0, -15.0],
+            "waist_1": [10.0, 0.0,  0.0],
+            "waist_2": [0.0,  10.0, 0.0],
+            "waist_3": [-10.0, 0.0, 0.0],
+            "waist_4": [0.0, -10.0, 0.0]
+        }
     with open(STATE_FILE, "r") as f:
         return json.load(f)
 
 def parse_issue_body():
-    """Reads the issue body passed as an environment variable"""
     body = os.environ.get("ISSUE_BODY", "")
     lines = body.split('\n')
     
-    # Simple parser to find data under the headers defined in the YAML
-    operation = None
-    value = None
+    vertex_name = None
+    axis_name = None
+    amount = 0.0
     
+    # Parse the form data
     for i, line in enumerate(lines):
-        if line.strip() == "### What do you want to change?":
-            # The next non-empty line is the selection
-            operation = lines[i+2].strip()
-        if line.strip() == "### New Value":
-            value = lines[i+2].strip()
+        if line.strip() == "### Which point do you want to move?":
+            vertex_name = lines[i+2].strip()
+        elif line.strip() == "### Which direction?":
+            axis_name = lines[i+2].strip()
+        elif line.strip() == "### Amount to move (Positive or Negative)":
+            try:
+                amount = float(lines[i+2].strip())
+            except ValueError:
+                amount = 0.0
+                
+    return vertex_name, axis_name, amount
+
+def generate_stl(state):
+    # Unpack vertices for easy access
+    t = state["top"]
+    b = state["bottom"]
+    w1 = state["waist_1"]
+    w2 = state["waist_2"]
+    w3 = state["waist_3"]
+    w4 = state["waist_4"]
+
+    with open(STL_FILE, "w") as f:
+        f.write("solid sculpted_mesh\n")
+
+        # Helper to write a triangle
+        def write_facet(v1, v2, v3):
+            # Calculate normal
+            ux, uy, uz = v2[0]-v1[0], v2[1]-v1[1], v2[2]-v1[2]
+            vx, vy, vz = v3[0]-v1[0], v3[1]-v1[1], v3[2]-v1[2]
+            nx, ny, nz = uy*vz - uz*vy, uz*vx - ux*vz, ux*vy - uy*vx
+            l = math.sqrt(nx*nx + ny*ny + nz*nz)
+            if l == 0: l = 1 # Avoid div by zero
             
-    return operation, value
+            f.write(f"  facet normal {nx/l:.4f} {ny/l:.4f} {nz/l:.4f}\n")
+            f.write("    outer loop\n")
+            for v in [v1, v2, v3]:
+                f.write(f"      vertex {v[0]:.4f} {v[1]:.4f} {v[2]:.4f}\n")
+            f.write("    endloop\n  endfacet\n")
 
-def update_model(state):
-    radius = float(state["radius"])
-    height = float(state["height"])
-    r, g, b = hex_to_rgb(state["color"])
+        # Top Pyramid Faces
+        write_facet(t, w1, w2)
+        write_facet(t, w2, w3)
+        write_facet(t, w3, w4)
+        write_facet(t, w4, w1)
 
-    # 1. Write Material File (.mtl)
-    with open("model.mtl", "w") as f:
-        f.write("newmtl CrystalMat\n")
-        f.write("Ns 96.078\n") # Shininess
-        f.write("Ka 1.000 1.000 1.000\n") # Ambient
-        f.write(f"Kd {r:.3f} {g:.3f} {b:.3f}\n") # Diffuse Color (The one that matters)
-        f.write("Ks 0.500 0.500 0.500\n") # Specular
-        f.write("d 1.0\n") # Opacity
-        f.write("illum 2\n")
+        # Bottom Pyramid Faces (winding order reversed)
+        write_facet(b, w2, w1)
+        write_facet(b, w3, w2)
+        write_facet(b, w4, w3)
+        write_facet(b, w1, w4)
 
-    # 2. Write Geometry File (.obj)
-    with open("model.obj", "w") as f:
-        f.write("mtllib model.mtl\n") # Link to the color file
-        f.write(f"# Crystal State: R={radius} H={height}\n")
-        
-        # Vertices
-        f.write(f"v 0 0 {height}\n")   # Top
-        f.write(f"v {radius} 0 0\n")   # Waist 1
-        f.write(f"v 0 {radius} 0\n")   # Waist 2
-        f.write(f"v -{radius} 0 0\n")  # Waist 3
-        f.write(f"v 0 -{radius} 0\n")  # Waist 4
-        f.write(f"v 0 0 -{height}\n")  # Bottom
-
-        # Faces with Material
-        f.write("usemtl CrystalMat\n")
-        # Top Pyramid
-        f.write("f 1 2 3\n")
-        f.write("f 1 3 4\n")
-        f.write("f 1 4 5\n")
-        f.write("f 1 5 2\n")
-        # Bottom Pyramid
-        f.write("f 6 3 2\n")
-        f.write("f 6 4 3\n")
-        f.write("f 6 5 4\n")
-        f.write("f 6 2 5\n")
+        f.write("endsolid")
 
 if __name__ == "__main__":
     state = load_state()
     
-    # Check if we are running inside the GitHub Action (updating)
     if "ISSUE_BODY" in os.environ:
-        op, val = parse_issue_body()
-        print(f"Processing: {op} -> {val}")
+        v_name, axis_str, amount = parse_issue_body()
         
-        if op == "Change Color":
-            state["color"] = val # Expecting Hex
-        elif op == "Update Height":
-            state["height"] = float(val)
-        elif op == "Update Radius":
-            state["radius"] = float(val)
+        # Map axis name to index (0=x, 1=y, 2=z)
+        axis_idx = 0
+        if "Y" in axis_str: axis_idx = 1
+        if "Z" in axis_str: axis_idx = 2
+        
+        if v_name in state:
+            state[v_name][axis_idx] += amount
+            print(f"Moved {v_name} by {amount} on axis {axis_idx}")
             
-        # Save new state
-        with open(STATE_FILE, "w") as f:
-            json.dump(state, f, indent=2)
+            # Save updated state
+            with open(STATE_FILE, "w") as f:
+                json.dump(state, f, indent=2)
 
-    # Always regenerate the 3D files
-    update_model(state)
+    generate_stl(state)

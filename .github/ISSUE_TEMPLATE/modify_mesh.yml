@@ -1,0 +1,43 @@
+name: Sculpt the Mesh
+description: Move a specific vertex to warp the shape
+title: "Sculpt: [Vertex] [Direction]"
+labels: ["automated-update"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Select a vertex and how you want to move it.
+
+  - type: dropdown
+    id: vertex
+    attributes:
+      label: Which point do you want to move?
+      options:
+        - "top"
+        - "bottom"
+        - "waist_1"
+        - "waist_2"
+        - "waist_3"
+        - "waist_4"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: axis
+    attributes:
+      label: Which direction?
+      options:
+        - "X (Left/Right)"
+        - "Y (Forward/Back)"
+        - "Z (Up/Down)"
+    validations:
+      required: true
+
+  - type: input
+    id: amount
+    attributes:
+      label: Amount to move (Positive or Negative)
+      description: "Example: 5.0 or -3.5"
+      placeholder: "5.0"
+    validations:
+      required: true
