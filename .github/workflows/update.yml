@@ -19,7 +19,8 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Run Script
+      # THIS IS THE STEP WE MISSED BEFORE
+      - name: Run Script to Modify README
         env:
           ISSUE_BODY: ${{ github.event.issue.body }}
         run: python modify.py
@@ -28,11 +29,12 @@ jobs:
         run: |
           git config --global user.name 'ShapeBot'
           git config --global user.email 'bot@noreply.github.com'
-          git add state.json model.obj model.mtl
-          git commit -m "Update Crystal based on #${{ github.event.issue.number }}"
+          # We explicitly only add the README and the state file
+          git add README.md state.json
+          git commit -m "Update shape geometry based on issue #${{ github.event.issue.number }}"
           git push
 
       - name: Close Issue
         uses: peter-evans/close-issue@v2
         with:
-          comment: "✅ Success! I have updated the model. You can view the changes in the README."
+          comment: "✅ Success! I have updated the STL code block in the README."
