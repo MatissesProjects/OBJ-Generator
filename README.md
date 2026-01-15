@@ -21,17 +21,17 @@ solid collaborative_crystal
       vertex -10.0000 0.0000 0.0000
     endloop
   endfacet
-  facet normal 0.3085 -0.3085 -0.8998
+  facet normal 0.2188 0.7383 -0.6380
     outer loop
       vertex 25.0000 0.0000 12.0000
       vertex -10.0000 0.0000 0.0000
-      vertex 0.0000 10.0000 0.0000
+      vertex 0.0000 10.0000 15.0000
     endloop
   endfacet
-  facet normal -0.5298 -0.5298 0.6623
+  facet normal -0.3039 -0.8737 0.3799
     outer loop
       vertex 25.0000 0.0000 12.0000
-      vertex 0.0000 10.0000 0.0000
+      vertex 0.0000 10.0000 15.0000
       vertex 10.0000 0.0000 0.0000
     endloop
   endfacet
@@ -49,18 +49,18 @@ solid collaborative_crystal
       vertex 0.0000 -10.0000 14.0000
     endloop
   endfacet
-  facet normal 0.6092 -0.6092 0.5077
+  facet normal 0.3847 -0.8656 0.3206
     outer loop
       vertex 0.0000 0.0000 -12.0000
-      vertex 0.0000 10.0000 0.0000
+      vertex 0.0000 10.0000 15.0000
       vertex -10.0000 0.0000 0.0000
     endloop
   endfacet
-  facet normal -0.6092 -0.6092 0.5077
+  facet normal -0.3847 -0.8656 0.3206
     outer loop
       vertex 0.0000 0.0000 -12.0000
       vertex 10.0000 0.0000 0.0000
-      vertex 0.0000 10.0000 0.0000
+      vertex 0.0000 10.0000 15.0000
     endloop
   endfacet
 endsolid
