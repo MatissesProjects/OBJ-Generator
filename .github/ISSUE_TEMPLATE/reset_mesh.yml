@@ -1,0 +1,10 @@
+name: Reset Shape
+description: Reset the shape to the default Octahedron
+title: "Reset: Restore Default Shape"
+labels: ["automated-update"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Are you sure you want to reset the shape? This will discard all current modifications.
+        The previous state will be saved as a backup.

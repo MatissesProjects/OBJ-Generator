@@ -8,27 +8,44 @@ permissions:
   issues: write
 
 jobs:
+
   update:
-    if: ${{startsWith(github.event.issue.title, 'Sculpt:') || startsWith(github.event.issue.title, 'Sculpt:')}}
+
+    if: ${{startsWith(github.event.issue.title, 'Sculpt:') || startsWith(github.event.issue.title, 'Reset:')}}
+
     runs-on: ubuntu-latest
+
     steps:
+
       - uses: actions/checkout@v3
 
+
+
       - name: Setup Python
+
         uses: actions/setup-python@v4
+
         with:
+
           python-version: '3.x'
 
+
+
       - name: Generate Binary STL
+
         env:
+
           ISSUE_BODY: ${{ github.event.issue.body }}
+
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+
         run: python modify.py
 
       - name: Commit Changes
         run: |
           git config --global user.name 'ShapeBot'
           git config --global user.email 'bot@noreply.github.com'
-          git add README.md state.json model.stl
+          git add README.md state.json model.stl previous_state.json
           git commit -m "Rewrite README with new shape coordinates"
           git push
 

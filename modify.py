@@ -3,28 +3,40 @@ import os
 import math
 
 STATE_FILE = "state.json"
+PREVIOUS_STATE_FILE = "previous_state.json"
 README_FILE = "README.md"
-# TODO: Update this to your Cloudflare Pages URL after setup (e.g., "https://stl-generator.pages.dev/")
+# TODO: Update this to your Cloudflare Pages URL after setup (e.g., "https://stl-generator.pages.dev/")    
 SITE_URL = "https://matissesprojects.github.io/STL-Generator/"
+
+def get_default_state():
+    # NEW SHAPE: Octahedron (6 vertices)
+    return {
+        "top":    [0.0,   0.0,  12.0],
+        "bottom": [0.0,   0.0, -12.0],
+        "front":  [10.0,  0.0,  0.0],
+        "back":   [-10.0, 0.0,  0.0],
+        "left":   [0.0,   10.0, 0.0],
+        "right":  [0.0,  -10.0, 0.0]
+    }
 
 def load_state():
     if not os.path.exists(STATE_FILE):
-        # NEW SHAPE: Octahedron (6 vertices)
-        return {
-            "top":    [0.0,   0.0,  12.0],
-            "bottom": [0.0,   0.0, -12.0],
-            "front":  [10.0,  0.0,  0.0],
-            "back":   [-10.0, 0.0,  0.0],
-            "left":   [0.0,   10.0, 0.0],
-            "right":  [0.0,  -10.0, 0.0]
-        }
+        return get_default_state()
     with open(STATE_FILE, "r") as f:
         return json.load(f)
+
+def save_state(state):
+    with open(STATE_FILE, "w") as f:
+        json.dump(state, f, indent=2)
+
+def save_previous_state(state):
+    with open(PREVIOUS_STATE_FILE, "w") as f:
+        json.dump(state, f, indent=2)
 
 def parse_issue_body():
     body = os.environ.get("ISSUE_BODY", "")
     lines = body.split('\n')
-    
+
     vertex_name = ''
     axis_name = ''
     amount = 0.0
@@ -39,7 +51,7 @@ def parse_issue_body():
                 amount = float(lines[i+2].strip())
             except ValueError:
                 amount = 0.0
-                
+
     return vertex_name, axis_name, amount
 
 def generate_stl_content(state):
@@ -59,7 +71,7 @@ def generate_stl_content(state):
         nx, ny, nz = uy*vz - uz*vy, uz*vx - ux*vz, ux*vy - uy*vx
         length = math.sqrt(nx*nx + ny*ny + nz*nz)
         if length == 0: length = 1
-        
+
         lines.append(f"  facet normal {nx/length:.4f} {ny/length:.4f} {nz/length:.4f}")
         lines.append("    outer loop")
         for v in [v1, v2, v3]:
@@ -96,11 +108,11 @@ The community is building this shape together. Every update completely rewrites 
 ## Current Shape
 Below is the live STL data. GitHub renders this automatically.
 
-[**🌐 View Full Screen 3D Model**]({SITE_URL})
+[**🌐 View in 3D**]({SITE_URL})
 
 ~~~stl
 {stl_content}
-~~~
+~~~ 
 
 ## How to Contribute
 1. Click the button below.
@@ -108,27 +120,45 @@ Below is the live STL data. GitHub renders this automatically.
 
 [ 🛠️ Modify the Mesh ](https://github.com/MatissesProjects/STL-Generator/issues/new?template=modify_mesh.yml)
 
+[ 🔄 Reset to Default ](https://github.com/MatissesProjects/STL-Generator/issues/new?template=reset_mesh.yml)
+
 ---
 *Last updated by the ShapeBot*
 """
-    
+
     with open(README_FILE, "w", encoding="utf-8") as f:
         f.write(readme_text)
 
 if __name__ == "__main__":
-    state = load_state()
+    current_state = load_state()
+    issue_title = os.environ.get("ISSUE_TITLE", "")
     
-    if "ISSUE_BODY" in os.environ:
+    # Check if we are running in an action that requires modification
+    is_reset = issue_title.startswith("Reset:")
+    is_sculpt = issue_title.startswith("Sculpt:") or "ISSUE_BODY" in os.environ
+
+    if is_reset:
+        print("Resetting shape to default...")
+        save_previous_state(current_state)
+        current_state = get_default_state()
+        save_state(current_state)
+
+    elif is_sculpt:
+        print("Modifying shape...")
         v_name, axis_str, amount = parse_issue_body()
         axis_idx = 0
         if "Y" in axis_str: axis_idx = 1
         if "Z" in axis_str: axis_idx = 2
-        
-        if v_name in state:
-            state[v_name][axis_idx] += amount
-            with open(STATE_FILE, "w") as f:
-                json.dump(state, f, indent=2)
 
-    stl_string = generate_stl_content(state)
+        if v_name in current_state:
+            # Backup before modifying
+            save_previous_state(current_state)
+            
+            # Modify
+            current_state[v_name][axis_idx] += amount
+            save_state(current_state)
+    
+    # Always regenerate artifacts based on current state (modified or not)
+    stl_string = generate_stl_content(current_state)
     write_stl_file(stl_string)
     write_readme(stl_string)

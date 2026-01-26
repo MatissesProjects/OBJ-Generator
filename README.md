@@ -5,7 +5,7 @@ The community is building this shape together. Every update completely rewrites 
 ## Current Shape
 Below is the live STL data. GitHub renders this automatically.
 
-[**🌐 View Full Screen 3D Model**](https://matissesprojects.github.io/STL-Generator/)
+[**🌐 View in 3D**](https://matissesprojects.github.io/STL-Generator/)
 
 ~~~stl
 solid collaborative_crystal
@@ -66,13 +66,15 @@ solid collaborative_crystal
     endloop
   endfacet
 endsolid
-~~~
+~~~ 
 
 ## How to Contribute
 1. Click the button below.
 2. Choose a point and move it!
 
 [ 🛠️ Modify the Mesh ](https://github.com/MatissesProjects/STL-Generator/issues/new?template=modify_mesh.yml)
+
+[ 🔄 Reset to Default ](https://github.com/MatissesProjects/STL-Generator/issues/new?template=reset_mesh.yml)
 
 ---
 *Last updated by the ShapeBot*
