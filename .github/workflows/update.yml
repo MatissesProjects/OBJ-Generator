@@ -28,7 +28,7 @@ jobs:
         run: |
           git config --global user.name 'ShapeBot'
           git config --global user.email 'bot@noreply.github.com'
-          git add README.md state.json
+          git add README.md state.json model.stl
           git commit -m "Rewrite README with new shape coordinates"
           git push
 

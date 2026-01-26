@@ -23,8 +23,8 @@ def parse_issue_body():
     body = os.environ.get("ISSUE_BODY", "")
     lines = body.split('\n')
     
-    vertex_name = None
-    axis_name = None
+    vertex_name = ''
+    axis_name = ''
     amount = 0.0
     
     for i, line in enumerate(lines):
@@ -82,6 +82,10 @@ def generate_stl_content(state):
     lines.append("endsolid")
     return "\n".join(lines)
 
+def write_stl_file(stl_content):
+    with open("model.stl", "w") as f:
+        f.write(stl_content)
+
 def write_readme(stl_content):
     readme_text = f"""# 🗿 Collaborative Sculpture
 
@@ -89,6 +93,8 @@ The community is building this shape together. Every update completely rewrites 
 
 ## Current Shape
 Below is the live STL data. GitHub renders this automatically.
+
+[**🌐 View Full Screen 3D Model**](https://matissesprojects.github.io/STL-Generator/)
 
 ~~~stl
 {stl_content}
@@ -104,7 +110,7 @@ Below is the live STL data. GitHub renders this automatically.
 *Last updated by the ShapeBot*
 """
     
-    with open(README_FILE, "w") as f:
+    with open(README_FILE, "w", encoding="utf-8") as f:
         f.write(readme_text)
 
 if __name__ == "__main__":
@@ -122,4 +128,5 @@ if __name__ == "__main__":
                 json.dump(state, f, indent=2)
 
     stl_string = generate_stl_content(state)
+    write_stl_file(stl_string)
     write_readme(stl_string)
