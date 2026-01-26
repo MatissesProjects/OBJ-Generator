@@ -9,60 +9,60 @@ Below is the live STL data. GitHub renders this automatically.
 
 ~~~stl
 solid collaborative_crystal
-  facet normal -0.0891 0.9507 0.2971
+  facet normal -0.6092 0.6092 -0.5077
     outer loop
-      vertex 50.0000 0.0000 12.0000
+      vertex 0.0000 0.0000 12.0000
       vertex 10.0000 0.0000 0.0000
-      vertex 0.0000 -10.0000 29.0000
+      vertex 0.0000 -10.0000 0.0000
     endloop
   endfacet
-  facet normal 0.0693 -0.9355 -0.3465
+  facet normal 0.6092 0.6092 -0.5077
     outer loop
-      vertex 50.0000 0.0000 12.0000
-      vertex 0.0000 -10.0000 29.0000
+      vertex 0.0000 0.0000 12.0000
+      vertex 0.0000 -10.0000 0.0000
       vertex -10.0000 0.0000 0.0000
     endloop
   endfacet
-  facet normal 0.1210 0.7868 -0.6052
+  facet normal 0.6092 -0.6092 -0.5077
     outer loop
-      vertex 50.0000 0.0000 12.0000
+      vertex 0.0000 0.0000 12.0000
       vertex -10.0000 0.0000 0.0000
-      vertex 0.0000 10.0000 15.0000
+      vertex 0.0000 10.0000 0.0000
     endloop
   endfacet
-  facet normal -0.1442 -0.8650 0.4806
+  facet normal -0.6092 -0.6092 -0.5077
     outer loop
-      vertex 50.0000 0.0000 12.0000
-      vertex 0.0000 10.0000 15.0000
+      vertex 0.0000 0.0000 12.0000
+      vertex 0.0000 10.0000 0.0000
       vertex 10.0000 0.0000 0.0000
     endloop
   endfacet
-  facet normal -0.2735 0.9345 0.2279
+  facet normal -0.6092 0.6092 0.5077
     outer loop
       vertex 0.0000 0.0000 -12.0000
-      vertex 0.0000 -10.0000 29.0000
+      vertex 0.0000 -10.0000 0.0000
       vertex 10.0000 0.0000 0.0000
     endloop
   endfacet
-  facet normal 0.2735 0.9345 0.2279
+  facet normal 0.6092 0.6092 0.5077
     outer loop
       vertex 0.0000 0.0000 -12.0000
       vertex -10.0000 0.0000 0.0000
-      vertex 0.0000 -10.0000 29.0000
+      vertex 0.0000 -10.0000 0.0000
     endloop
   endfacet
-  facet normal 0.3847 -0.8656 0.3206
+  facet normal 0.6092 -0.6092 0.5077
     outer loop
       vertex 0.0000 0.0000 -12.0000
-      vertex 0.0000 10.0000 15.0000
+      vertex 0.0000 10.0000 0.0000
       vertex -10.0000 0.0000 0.0000
     endloop
   endfacet
-  facet normal -0.3847 -0.8656 0.3206
+  facet normal -0.6092 -0.6092 0.5077
     outer loop
       vertex 0.0000 0.0000 -12.0000
       vertex 10.0000 0.0000 0.0000
-      vertex 0.0000 10.0000 15.0000
+      vertex 0.0000 10.0000 0.0000
     endloop
   endfacet
 endsolid
