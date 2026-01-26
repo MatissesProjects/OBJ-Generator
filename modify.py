@@ -4,6 +4,8 @@ import math
 
 STATE_FILE = "state.json"
 README_FILE = "README.md"
+# TODO: Update this to your Cloudflare Pages URL after setup (e.g., "https://stl-generator.pages.dev/")
+SITE_URL = "https://matissesprojects.github.io/STL-Generator/"
 
 def load_state():
     if not os.path.exists(STATE_FILE):
@@ -94,7 +96,7 @@ The community is building this shape together. Every update completely rewrites 
 ## Current Shape
 Below is the live STL data. GitHub renders this automatically.
 
-[**🌐 View Full Screen 3D Model**](https://matissesprojects.github.io/STL-Generator/)
+[**🌐 View Full Screen 3D Model**]({SITE_URL})
 
 ~~~stl
 {stl_content}
